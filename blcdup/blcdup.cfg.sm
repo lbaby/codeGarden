@@ -1,0 +1,19 @@
+blcdup.inputPath=in
+blcdup.filePattern=*
+blcdup.tmpPath=tmp
+blcdup.indexPath=index
+blcdup.outputPath=out
+blcdup.logPath=.
+blcdup.errorPath=./err
+blcdup.bakPath=bak
+blcdup.backup=yes
+blcdup.progID=01
+blcdup.maxmem=1024
+blcdup.sleepTime=3
+blcdup.recordsPerMin=10000
+#starDate(YYYYMMDD)
+blcdup.dirPos=105-112
+#starDate(hhMM)
+blcdup.filePos=113-116
+blcdup.keyPos=117-118|1-20|23-43|44-64
+blcdup.presort=sort -t . -k 2,2n -k 3,3n
