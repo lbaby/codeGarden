@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+
+
+<project name="Thinking in Java (frogbean)" default="frogbean.run" basedir=".">
+
+  <description>
+  build.xml for frogbean of "Thinking in Java, 3rd Edition"
+  by Bruce Eckel
+  Available at http://www.MindView.net
+  See copyright notice in CopyRight.txt
+
+  Ant must be downloaded from:
+  http://jakarta.apache.org/ant
+
+  Options:
+  ant
+    compiles and runs all examples (if necessary)
+  ant test
+    compiles and runs all examples
+  ant frogbean.build
+    compiles but does not run examples
+  ant clean
+    removes old class files
+  </description>
+
+  <target name="JDK.version.check" unless="JDK.version.ok">
+    <javac
+      includes="CheckVersion.java"
+      srcdir="${basedir}/../com/bruceeckel/tools/"
+      classpath="${basedir}/.."
+    />
+    <java
+      taskname="CheckVersion"
+      classname="com.bruceeckel.tools.CheckVersion"
+      classpath="${basedir}/.."
+      fork="true"
+      failonerror="true"
+    />
+    <property name="JDK.version.ok" value="true"/>
+  </target>
+
+  <!-- build all dependencies and check to see if tests are up to date -->
+  <target name="frogbean.prepare">
+    <condition property="test.run" value="true">
+      <or>
+        <uptodate>
+          <srcfiles dir= "${basedir}" includes="**/*Output.txt"/>
+          <mapper type="glob" from="*Output.txt" to="*.class"/>
+        </uptodate>
+        <available file="failed"/>
+      </or>
+    </condition>
+  </target>
+
+  <!-- build all classes in this directory -->
+  <target name="frogbean.build" depends="JDK.version.check,frogbean.prepare"
+    description="Compile all source files">
+    <javac
+      srcdir="${basedir}"
+      classpath="${basedir}/.."
+      source="1.4"
+    />
+  </target>
+
+  <!-- force all tests to be run -->
+  <target name="test" description="Compile and test all examples">
+    <property name="test.run" value="true"/>
+    <antcall target="frogbean.run"/>
+  </target>
+
+  <!-- run all untested examples in this directory -->
+  <target name="frogbean.run" depends="frogbean.build" if="test.run"
+    description="Compile and run untested examples">
+    <touch file="failed"/>
+    <delete file="failed"/>
+  </target>
+
+  <!-- delete all class files -->
+  <target name="clean" description="Removes all old class files">
+    <delete>
+      <fileset dir="${basedir}" includes="**/*.class"/>
+      <fileset dir="${basedir}" includes="**/*Output.txt"/>
+      <fileset dir="${basedir}" includes="**/log.txt"/>
+      <fileset dir="${basedir}" includes="failed"/>
+    </delete>
+    <echo message="clean successful"/>
+  </target>
+
+  <target name="jcsc">
+    <taskdef name="jcsc" classname="rj.tools.jcsc.ant.JCSCTask"/>
+    <jcsc rules="${basedir}/../tij.jcsc"
+      startpackage="frogbean"
+      destdir="${basedir}/../jcsc"
+      worstcount="20">
+      <fileset dir="${basedir}" includes="**/*.java"/>
+    </jcsc>
+  </target>
+</project>
