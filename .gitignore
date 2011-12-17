@@ -3,3 +3,8 @@
 .settings
 .metadata
 .DS_Store
+*.class
+*.so
+*.o
+*.swp
+.?*
