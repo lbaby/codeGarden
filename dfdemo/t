@@ -1,0 +1,1 @@
+awk -F'|' '{print $1}' h01234num.dat |./dfdemo h01234num.dat  6 ge 19990916000000 $*
