@@ -1,0 +1,15 @@
+CXXFLAGS = +DD64 -g -c -I.  -I./mpub
+LDFLAGS =  -g +DD64 -L./mpub  -ldatafile 
+BIN=gpsend
+all:$(BIN)
+gp.o:gp.cpp gp.h
+.cpp.o:
+	aCC -o $@ $< $(CXXFLAGS)
+gpsend.o:gpsend.cpp gpsend.h
+do_file.o:do_file.cpp gpsend.h
+
+$(BIN):gpsend.o do_file.o gp.o
+	aCC  -o $@ gpsend.o do_file.o gp.o $(LDFLAGS)
+
+clean:
+	rm -f *.o $(BIN)

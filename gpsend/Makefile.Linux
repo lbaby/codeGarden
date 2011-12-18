@@ -1,0 +1,41 @@
+
+BIN=gpsend
+
+#source file section
+SRC= gp.cpp gpsend.cpp  do_file.cpp 
+$(BIN):gpsend.o do_file.o gp.o
+	g++ -o $@ $^ -g $(LDFLAGS)
+
+all:$(BIN)
+DEP=$(SRC:%.cpp=%.d)
+
+#complier configruation
+CC=g++
+$(AR) = ar
+
+#
+CXXFLAGS +=  -D_USING_NAMESPACE_STD -D_INCLUDE_STDINT_H -I. -g -I./mpub
+LDFLAGS += -ldatafile -L./mpub
+ARFLAGS = rsv
+
+
+lib%.a:%.o
+	$(AR)	$(ARFLAGS) $@ $<
+
+#dependences 
+%.d:%.cpp
+	$(CC) -MM  $(CXXFLAGS) $^ \
+	| sed s'/:/ $@:/' > $@
+
+ifneq ($(MAKECMDGOALS),clean)
+-include $(DEP)
+endif
+
+.PHONY:all clean
+clean:
+	rm -f *.o *.a  $(BIN)
+cleanall:
+	rm -f  *.o $(DEP) $(BIN)
+	
+
+

@@ -1,0 +1,17 @@
+CXXFLAGS =  -g -I.  +DD64
+LDFLAGS = +O2  +DD64
+
+C++ = aCC
+BINS=dfdemo
+
+
+
+all:$(BINS)
+$(BINS):dfdemo.o datafile.o 
+	$(C++) -o $@  dfdemo.o datafile.o $(LDFLAGS)
+clean:
+	rm -f *.o core*  $(BINS)
+	
+datafile.o:datafile.cpp datafile.h htable.h
+
+dfdemon.o:dfdemo.cpp datafile.h htabe.h

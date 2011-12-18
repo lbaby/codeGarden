@@ -1,0 +1,16 @@
+CXXFLAGS =  -g -I.  -D_USING_NAMESPACE_STD  -D_NEED_STDINT 
+LDFLAGS = -g -lstdc++
+
+C++ = g++
+BINS=dfdemo
+
+
+
+all:$(BINS)
+$(BINS):dfdemo.o datafile.o 
+	$(C++) -o $@ $^ $(LDFLAGS)
+clean:
+	rm -f *.o core*  $(BINS)
+	
+datafile.o:datafile.cpp datafile.h htable.h
+dfdemon.o:dfdemo.cpp datafile.h htabe.h

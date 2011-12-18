@@ -1,0 +1,26 @@
+CXXFLAGS = -c -I. -g +DD64 
+LDFLAGS =  +DD64
+CC=aCC
+
+all:sumlim
+
+
+.cpp.o:
+	$(CC) -o $@ $< $(CXXFLAGS) 
+
+
+#the folowing lines generated  by command "gcc -MM"
+do_sum.o : do_sum.cpp do_sum.h toolkits.h stl_conf.h htable.h sumlim.h \
+  log_file.h
+log_file.o : log_file.cpp log_file.h stl_conf.h toolkits.h
+sumlim.o : sumlim.cpp sumlim.h stl_conf.h toolkits.h log_file.h do_sum.h \
+  htable.h
+toolkits.o : toolkits.cpp toolkits.h stl_conf.h
+
+#end of gcc -MM
+
+sumlim:sumlim.o toolkits.o log_file.o do_sum.o
+	$(CC) -o $@ sumlim.o toolkits.o log_file.o do_sum.o $(LDFLAGS)
+
+clean:
+	rm -f *.o $(BIN)

@@ -1,0 +1,1 @@
+cat parser.dat |./parser
