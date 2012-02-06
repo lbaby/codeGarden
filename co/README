@@ -1,0 +1,646 @@
+本文主要是从 A  Curious Course on Coroutines and Concurrency   作笔记而来。
+
+1，生成器：
+生成器是一个包含yield表达式的函数，这个函数与普通函数不同
+--它返回一个生成器
+--首次执行时并不真正运行，只是返回一个生成器
+--首次对这个生成器调用内置的next函数（python2.6+ 使用 generator. next())，会让函数运行一次到yield，yield生成数据并挂起这个函数
+--以后的每次next调用，都会从上一次挂起处的yield表达式继续运行，进入下一次生成
+--当生成器返回时，会抛出StopIteration异常，如果在迭代中，会使迭代停止
+
+>>> def countdown(n):
+    print('count down from {0}'.format(n))
+    while n > 0 :
+        yield n
+        n -=  1
+... ... ... ... ... 
+>>> x=countdown(5)
+print('x is set')
+for i in x:
+    print(i)>>> x is set
+>>> ... 
+... 
+count down from 5
+5
+4
+3
+2
+1
+>>> x
+<generator object countdown at 0x100557b90>
+>>> x=countdown(5)
+>>> x
+<generator object countdown at 0x100557c30>
+>>> next(x)
+count down from 5
+5
+>>> next(x)
+4
+>>> next(x)
+3
+>>> next(x)
+2
+>>> next(x)
+1
+>>> next(x)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+
+另外，演示里给出了一个taill -f 的python实现
+(tail -f 是unix里的工具 -f 的作用是监控制某个文件，
+如果有新的数据追加到此文件，就输出来，这个功能在看日志时一般会用到）
+
+>>> import time
+def follow(file):
+    file.seek(0,2)
+    while True:
+        line = file.readline()
+        if not line:
+            time.sleep(0.1)
+            continue
+        yield line
+
+logfile=open('a')
+
+for line in follow(logfile):
+    print("{0}".format(line),end="")>>> ... ... ... ... ... ... ... ... >>> >>> >>> ... 
+... 
+b
+last
+^CTraceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 6, in follow
+KeyboardInterrupt
+
+
+我们在另外的shell里 
+echo b >> a
+echo last >> a
+就可以让tail -f 的程序输出。
+
+ 生成式组成管道流水线
+
+生成器作为管道: 将上个生成器的输出作为下一个生成器的输出，就构成了一个管道
+(管道是unix 下的一种进程间通讯工具，程序可以将自己的输出数据作为后一个程序的输入数据
+比如：ls -l命令输出的文件列表：
+lymatoMacBook-Pro:co ly$ ls -l
+total 56
+-rw-r--r--  1 ly  staff    43 Feb  2 15:27 a
+-rw-r--r--  1 ly  staff     0 Feb  1 23:21 a.log
+-rw-r--r--  1 ly  staff   172 Feb  2 10:01 countdown.py
+-rwxr-xr-x  1 ly  staff  9056 Feb  2 13:52 d
+-rw-r--r--  1 ly  staff   606 Feb  2 14:06 d.c
+-rw-r--r--  1 ly  staff   271 Feb  1 23:46 tailf.py
+我们使用管道对这个数据按文件大小排序：
+lymatoMacBook-Pro:co ly$ ls -l | sed 1d | sort -nk5
+-rw-r--r--  1 ly  staff     0 Feb  1 23:21 a.log
+-rw-r--r--  1 ly  staff    43 Feb  2 15:27 a
+-rw-r--r--  1 ly  staff   172 Feb  2 10:01 countdown.py
+-rw-r--r--  1 ly  staff   271 Feb  1 23:46 tailf.py
+-rw-r--r--  1 ly  staff   606 Feb  2 14:06 d.c
+-rwxr-xr-x  1 ly  staff  9056 Feb  2 13:52 d
+
+ls 的输出经由管道，由sed 和sort 过滤与重组以后，输出）
+
+
+我们可以通过将yield 表达式作为下一个表达式的输出构成一个流水线：
+
+
+import time
+def follow(file):
+    file.seek(0,2)
+    while True:
+        line = file.readline()
+        if not line:
+            time.sleep(0.1)
+            continue
+        yield line
+
+logfile=open('a')
+loglines=follow(logfile)
+
+
+def search(pattern,  lines):
+    for line in lines:
+        if pattern in line:
+            yield line
+
+pylines = search('python', loglines)
+for pyline in pylines:
+    print("{0}".format(pyline),end="")
+
+follow的输入被search 当作输入流过滤，就有了 tailf -f a | grep python的效果
+
+lymatoMacBook-Pro:co ly$ python3 pipeline.py 
+python
+we mention python
+we mention python in line again
+
+
+
+
+	2.	协程(coroutine)
+yield可以作为（右值），从而变成协程
+
+def search(pattern):
+        print ('looking for {0}'.format(pattern))
+        while True:
+            line = (yield)
+            if pattern in line:
+                print(line)
+
+p = search('python')
+
+
+>>> ... ... ... ... ... ... ... ... >>> >>> >>> >>> >>> ... ... ... ... ... ... >>> >>> >>> >>> 
+>>> p
+<generator object search at 0x100557be0>
+>>> next(p)
+looking for python
+>>> p.send('python')
+python
+>>> p.send('no ')
+>>> 
+
+yield作为右值表达式以后成为协程，
+在next调用以后，协程search 运行到yield表达式并挂起,等待输入
+除了生成数据，协程还可以接受数据(使用generator.send)
+
+协程只对 三个方法响应：全局next, 函数方法：send,close
+
+协程需要使用一次next方法或send(None)启动,这个调用会使协程运行到第一次yield处。
+
+既然每个协程都需要运行一次next，我们可以使用修饰器对函数进行修饰
+(被修饰器包装过的函数，运行时实际是运行的修饰器。)
+
+def coroutine(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        generator = function(*args, **kwargs)
+        next(generator) #prime the generator
+        return generator
+    return wrapper
+
+@coroutine
+def search(pattern):
+        print (‘looking for {0}’.format(pattern))
+        while True:
+            line = (yield)
+            if pattern in line:
+                print(line)
+
+p = search(‘python’)
+
+
+>>> >>> … … … … … … … >>> … … … … … … … >>> looking for python
+>>> >>> >>> 
+>>> 
+>>> p
+<generator object search at 0x100557b90>
+>>> p.send(‘python here’)
+python here
+>>> p.close()
+>>> p.send(‘p’)
+Traceback (most recent call last):
+  File “<stdin>”, line 1, in <module>
+StopIteration
+
+被包装以后的函数，在首次调用以后，修饰器会调用一次next 
+使用generator.close()以后，发送给已关闭的生成器的数据会引发异常
+垃圾收集器也会调用close()方法
+
+
+close会引起GeneratorExit异常，而我们也可以捕捉这个异常
+
+>>> import functools
+
+def coroutine(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        generator = function(*args, **kwargs)
+        next(generator) #prime the generator
+        return generator
+    return wrapper
+
+@coroutine
+def search(pattern):
+        print (‘looking for {0}’.format(pattern))
+        try:
+            while True:
+                line = (yield)
+                if pattern in line:
+                    print(line)
+        except GeneratorExit:
+            print(‘generator closed’)
+
+p = search(‘python’)
+p.send(‘python 3’)
+p.close()
+
+
+>>> >>> … … … … … … … >>> … … … … … … … … … … >>> looking for python
+>>> python 3
+>>> generator closed
+
+此异常不可以忽略，唯一合法的处理是清理并退出
+
+
+异常可以在yied 表达式中抛出。
+>>> p.throw(RuntimeError, 'except here')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 6, in search
+RuntimeError: except here
+上边所示的异常就是在yield中抛出的。
+在yield表达式出抛出的异常可以和普通的异常一样处理
+
+
+
+
+生成器与协程的对比：
+尽管生成器与协程极 其相似，但二者还是两个根本不同的概念：
+生成器生成数据
+而协程用来消耗数据
+
+还是比较容易区分两者的，对协程有意义的方法有时被描述成翻转产生迭代的生成器用法
+（比如重置生成器的值)这挺讨厌人的。
+
+
+一个讨厌的例子：
+>>> def countdown(n):
+        print("Counting down from {0}".format( n))
+        while n >= 0:
+            newvalue = (yield n)
+            # If a new value got sent in, reset n with it
+            if newvalue is not None:
+                n = newvalue
+            else:
+                n -= 1
+
+
+c = countdown(5)
+for n in c:
+    print(n)
+    if n == 5:
+        c.send(3)
+
+... ... ... ... ... ... ... ... ... >>> >>> >>> ... ... ... ... Counting down from 5
+5
+3
+2
+1
+0
+>>> 
+
+在生成器生成5..0的序列时，调用c.send(3)，会扭转生成器从3开始生成。
+
+
+
+简单的说，生成器为迭代器生成数据
+而协程是数据的消费者
+你不应该把它们弄混，协程和迭代器不相关。
+
+
+
+
+第二部分 ： 协程，管道和数据流
+
+协程可以用来构建管道，只用把协程串起来并通过send推送数据就行了
+这种管道（由协程构成的）需要要一个初始的数据源（一个生产者），
+源驱动了整个的管道链
+像这样：
+def source(target): 
+	while not done:
+		item = produce_an_item() ...
+		target.send(item)
+
+               target.close()
+
+
+数据源一般不是个协程。
+
+
+管道结束点
+管道必须要有一个结束点（下水道）
+
+send()
+->  coroutine -> 下水道（sink）
+
+这个下水道的作用是收集所有发送给它的数据并处理
+(即作为管道的尾端，不再向下一链条传递，必要时处理close异常）
+ @coroutine
+           def sink():
+               try:
+                   while True:
+                        item = (yield)
+...
+               except GeneratorExit:
+# Done ...
+
+使用协程的改进版本的仿 ‘tail -f ‘命令
+首先是协程的例行公事：
+
+import functools
+
+def coroutine(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        generator = function(*args, **kwargs)
+        next(generator) #prime the generator
+        return generator
+    return wrapper
+
+数据生成源
+import time
+def follow(the file, target):
+    thefile.seek(0,2)      # Go to the end of the file
+    while True:
+        line = thefile.readline()
+        if not line:
+          time.sleep(0.1)    # Sleep briefly
+          continue
+        target.send(line)
+
+这个下水道仅仅打印收到的数据
+
+@coroutine
+def printer():
+    while True:
+        line = (yield)
+        print(line, end=‘’)
+
+关键点就在于follow函数读取数据并推送给printer()协程
+f=open(‘a’)
+follow(f, printer())
+
+
+处于管道中间部分（既接收又推送）的协程一般是用来
+完成变换，过滤，路由等功能。
+
+@coroutine
+def filter(target):
+while True:
+        item = (yield)
+# Receive an item
+# Transform/filter item ... # Send it along to the next stage target.send(item)
+grep filter coroutine
+     @coroutine
+     def grep(pattern,target):
+		while True:
+             line = (yield)           # Receive a line
+组装起来(很像lisp)
+     f = open("access-log")
+     follow(f,
+            grep('python',
+            printer()))
+
+
+生成器与协程组成管道的不同之处在于，
+生成器是基于迭代器的而协程使用send()：
+
+generator---(迭代器）->generator---(迭代器）->
+
+coroutine--send()->coroutine--send()->coroutine--send()->
+
+另外，可以使用协程将数据发送至多个方向
+数据源只是发送数据，进一步的数据路由可以是任意的复杂
+
+比如：将数据广播到多个目标：
+ @coroutine
+    def broadcast(targets):
+        while True:
+            item = (yield)
+            for target in targets:
+                target.send(item)
+
+
+
+￼
+
+
+相对一般的迭代器而言，协程提供了更加强大的数据路由可能性
+如果你构建了一堆数据处理组件，你可以通过一系列复杂的管道，
+分支，合并等操作将它们粘合起来
+
+不过协程也有一些限制（放在后边谈）
+
+另外，yield并不是表达式（？）
+想把它当作C语言一样来写的同学要悲剧了：
+while(line=yield)是语法错误。。。
+
+
+协程和对象:
+协程在某些程度上和OO设计模式的
+请求处理器差不多
+
+class GrepHandler(object):
+        def __init__(self,pattern, target):
+            self.pattern = pattern
+            self.target = target
+        def send(self,line):
+            if self.pattern in line:
+                self.target.send(line)
+
+
+协程版本的：
+
+@coroutine
+def grep(pattern,target):
+    while True:
+        line = (yield)           # Receive a line
+        if pattern in line:
+            target.send(line)
+
+
+协程比类要简单且快(50%左右）
+性能差距在于self指针的使用
+
+
+
+第三部分：
+
+协程与事件分派
+协程可以用来写很多处理事件流的组件
+
+
+现在展示一个处理xml组件：
+一个记录当前巴士的xml:
+<?xml version="1.0"?>
+  <buses>
+<bus>
+<id>7574</id>
+<route>147</route>
+<color>#3300ff</color>
+<revenue>true</revenue>
+<direction>North Bound</direction>
+<latitude>41.925682067871094</latitude>
+<longitude>-87.63092803955078</longitude> <pattern>2499</pattern>
+<patternDirection>North Bound</patternDirection>
+<run>P675</run>
+<finalStop><[CDATA[Paulina & Howard Terminal]]></finalStop> <operator>42493</operator>
+</bus> 
+</buses>
+
+使用SAX库，一个事件驱动的xml解析库
+SAX主要是在处理大xml文件时，使用增量的处理而不用占用大量内存
+但事件驱动 的特性也使得SAX在处理时相当低级与笨拙
+
+可以像这样的分派事件到协程：
+class EventHandler(xml.sax.ContentHandler):
+              def __init__(self,target):
+                  self.target = target
+              def startElement(self,name,attrs):
+                  self.target.send(('start',(name,attrs._attrs)))
+              def characters(self,text):
+                  self.target.send(('text',text))
+              def endElement(self,name):
+                  self.target.send(('end',name))
+
+
+
+随后 ，作者又展示了一个使用expat的样例性能提升83%
+使用 c语言写的扩展，又提升55%
+xml.etree.cElementTree是快速xml解析，实验表明，协程和它性能不相上下
+
+
+小结：协程与生成器相似
+你可以创建一堆处理组件并连接它们到一起
+可以通过创建管道，数据流图等 方法处理数据
+也可以使用协程来完成相当有技巧的执行（比如，事件驱动的系统）
+
+
+并行：
+你发送数据给协程
+也可以发送数据给线程（通过队列）
+也可以发送数据给进程（通过消息）
+协程自然就与线程和分布式系统问题联系在一起了。
+
+
+
+可以通过在线程内部或进程内部添加一个额外的层打包协程
+￼
+示例在这里：
+# cothread.py
+#
+# A thread object that runs a coroutine inside it.  Messages get sent
+# via a queue object
+
+from threading import Thread
+import queue
+from coroutine import *
+
+@coroutine
+def threaded(target):#这是用来将数据推送到下一个协程的代码（处于新的线程里）
+    messages = queue.Queue()
+    def run_target():
+        while True:
+            item = messages.get()
+            if item is GeneratorExit:
+                target.close()
+                return
+            else:
+                target.send(item)
+    Thread(target=run_target).start()#为后纯
+    try:#主线程协程的代码
+        while True:
+            item = (yield)
+            messages.put(item)
+    except GeneratorExit:
+        messages.put(GeneratorExit)
+
+# Example use
+
+if __name__ == '__main__':
+    import xml.sax
+    from cosax import EventHandler
+    from buses import *
+
+    xml.sax.parse("/Users/ly/ws/allroutes.xml", EventHandler(
+                    buses_to_dicts(
+                    threaded(
+                         filter_on_field("route","22",
+                         filter_on_field("direction","North Bound",
+                         bus_locations()))
+                    ))))
+                 
+整个图的关系可能看起来有些奇怪
+￼
+
+添加线程会使性能降低50%左右。
+
+
+
+
+也可以使用多进程的管道将两个协程
+# coprocess.py
+#
+# An example of running a coroutine in a subprocess connected by a pipe
+
+import pickle
+from coroutine import *
+
+@coroutine
+def sendto(f):
+    try:
+        while True:
+            item = (yield)
+            pickle.dump(item,f)
+            f.flush()
+    except StopIteration:
+        f.close()
+
+def recvfrom(f,target):
+    try:
+        while True:
+            item = pickle.load(f)
+            target.send(item)
+    except EOFError:
+        target.close()
+
+
+# Example use
+if __name__ == '__main__':
+    import xml.sax
+    #from cosax import EventHandler
+    from buses import *
+
+    import subprocess
+    p = subprocess.Popen(['python','busproc.py'],
+                         stdin=subprocess.PIPE)
+
+    xml.sax.parse("allroutes.xml",
+                  EventHandler(
+                          buses_to_dicts(
+                          sendto(p.stdin))))
+
+
+(貌似pickle包有问题，上边的代码不能通过）
+
+
+需要注意的是，你必须有足够的其他东西补偿多进程通讯造成的损失。
+(比如，足够的多CPU和进程）
+
+
+你可以使用协程将任务的实现从它的执行环境分隔开来
+协程就是实现
+而环境是你选择任意（线程，多进程，网络等 ）
+
+
+警告
+使用大量的协程，线程，及进程很容易造成一个不可维护的程序。
+也有可能使程序缓慢
+需要仔细地研究以知道这些是不是一个好主意
+
+一些隐藏的危险：
+对一个协程的send调用必须恰当地同步
+如果你对一个正在正在执行中的协程调用send ，你的程序会当掉
+比如：多线程对同一个目标发送数据
+
+
+限制：
+你不能创建一个协程循环或环（即yield 对自己调用send)
+堆栈化的send组成了一种调用栈
+如果你调用一个正在协程推送中的进程，会得到一个错误
+send并不挂起协程的执行
+

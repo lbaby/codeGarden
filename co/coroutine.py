@@ -16,6 +16,6 @@ def search(pattern):
             if pattern in line:
                 print(line)
 
-p = search('python')
+#p = search('python')
 
 
