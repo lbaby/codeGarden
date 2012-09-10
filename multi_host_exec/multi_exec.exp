@@ -8,6 +8,8 @@ proc get_conf {conf} {
         if { [gets $file  line ]  < 0 } break
         #comment line
         if { [ regexp -all  -- {^\s*#.*$} $line ] } continue 
+        #blank line
+        if { [ regexp -all  -- {^\s*$} $line ] } continue 
 
 	#WTF, data can affect script  when using concat directly
         set allconf($i) [ concat [regexp -inline -all -- {\S+} $line ] ]
@@ -24,13 +26,12 @@ proc telnet_and_exec {  host   user password  wd file } {
     eval spawn  telnet $host 
     expect "login:" {    send "$user\r" }
     expect "Password:" {  send "$password\r" }
-    expect "*$user*>"  {
+    sleep 1
         send "cd  $wd \r"
 	set cmd [open $file]
         send [read  $cmd]
 	close $cmd
 	send "exit\r"
-    }
 
     expect eof { return 0 }
     expect default {return 1}
