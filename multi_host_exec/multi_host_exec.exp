@@ -1,0 +1,102 @@
+#! /usr/bin/env expect --
+
+proc get_conf {conf} {
+    set file [ open $conf  "r" ]  
+    set i 0    
+
+    while 1 {
+        if { [gets $file  line ]  < 0 } break
+        #comment line
+        if { [ regexp -all  -- {^\s*#.*$} $line ] } continue 
+        #blank line
+        if { [ regexp -all  -- {^\s*$} $line ] } continue 
+
+	#WTF, data can affect script  when using concat directly
+        set allconf($i) [ concat [regexp -inline -all -- {\S+|\"[^\"]+"} $line ] ]
+        incr i
+    }
+    close $file
+
+    #can not return an array here . trick
+    array get allconf
+}
+
+
+
+
+proc telnet_and_exec {  host   user password  wd file } {
+    set timeout 5
+    eval spawn  telnet $host 
+    expect "login:" {    send "$user\r" }
+    #remove double quote password(if have )
+    eval regsub -all --  {("$)|(^")} $password  {} password
+
+    expect "Password:" {  send "$password\r" }
+    sleep 1
+        send "cd  $wd \r"
+	set cmd [open $file]
+        send [read  $cmd]
+	close $cmd
+	send "exit\r"
+
+    expect eof { return 0 }
+    expect default {return 1}
+
+    return 0
+}
+proc ssh_and_exec {  host   user password  wd file } {
+    set timeout 5
+    eval spawn  ssh $user@$host 
+    expect "(yes/no)?" { send "yes\r" }
+
+    sleep 3
+    regsub -all --  {("$)|(^")} $password {} password
+    expect "Password:" {  send "$password\r" }
+    sleep 3
+        send "cd  $wd \r"
+	set cmd [open $file]
+        send [read  $cmd]
+	close $cmd
+	send "exit\r"
+
+    expect eof { return 0 }
+    expect default {return 1}
+
+    return 0
+}
+
+
+
+if { [llength $argv ] < 1 } {
+	puts "Not enough argument"
+	exit 1
+}
+
+if [ catch { array set allconf   [ get_conf [ lindex $argv 0 ]  ]  } errmsg ] {
+ 	puts $errmsg
+	exit 1
+}
+
+for { set i 0 } { $i< [ array size allconf] } { incr i} {
+    if { [ llength     $allconf($i) ]  != 6 } {
+         puts "Bypass illegal config line :"
+	 puts $allconf($i) 
+	 puts "continuing..."
+	 continue
+    
+    }
+   puts $allconf($i)
+    if {   [ lindex   $allconf($i)  0  ]  == "ssh" } {
+        eval ssh_and_exec   [lrange  $allconf($i) 1 end]
+    } elseif { [ lindex  $allconf($i)  0 ] == "telnet" } {
+	eval telnet_and_exec   [lrange $allconf($i)  1  end ]
+     } else {
+            puts "Unknown protocal : "
+            puts [lindex $allconf($i) 0 ]
+     }
+   }
+
+#***_and_exec 10.45.4.65 user passwd "~/liuyang" a.sh
+
+
+
