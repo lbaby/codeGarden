@@ -21,8 +21,6 @@ def read_excel(excel):
 	book = xlrd.open_workbook(excel)
 	for n in range(book.nsheets):
 		sh = book.sheet_by_index(n)
-		rows = sh.nrows
-		cols = sh.ncols
 		for r in range(sh.nrows):
 			yield sh.row_values(r)
 
@@ -73,7 +71,6 @@ if __name__ == '__main__':
 	argv = parse_arg(sys.argv[1:])
 	db = cx_Oracle.connect(argv['DB'])
 	cursor = db.cursor()
-	row=None
 	for row in read_excel(argv['EXCEL']):
 		try:
 			exec_sql(cursor, argv['SQL'], row)
