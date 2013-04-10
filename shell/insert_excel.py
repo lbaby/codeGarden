@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
+#author : lbaby   lsylny@gmail.com
 ''' Insert an excel file into oracle db
     usage:
     insert_excel.py db=usr/passwd@db excel=all_data.xlsx sql="insert into aa values(:n1, :n2, to_number(:n3), NULL)"
