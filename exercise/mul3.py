@@ -1,6 +1,7 @@
 import random
 
-#    /_
+#     /
+#   + -- 
 #   | \
 def gr(x, y,n):
     ur = []
