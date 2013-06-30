@@ -1,0 +1,349 @@
+<?xml version="1.0"?>
+
+
+<project name="Thinking in Java (appendixa)" default="appendixa.run" basedir=".">
+
+  <description>
+  build.xml for appendixa of "Thinking in Java, 3rd Edition"
+  by Bruce Eckel
+  Available at http://www.MindView.net
+  See copyright notice in CopyRight.txt
+
+  Ant must be downloaded from:
+  http://jakarta.apache.org/ant
+
+  Options:
+  ant
+    compiles and runs all examples (if necessary)
+  ant test
+    compiles and runs all examples
+  ant appendixa.build
+    compiles but does not run examples
+  ant clean
+    removes old class files
+  </description>
+
+  <target name="JDK.version.check" unless="JDK.version.ok" depends="appendixa.check">
+    <javac
+      includes="CheckVersion.java"
+      srcdir="${basedir}/../com/bruceeckel/tools/"
+      classpath="${basedir}/.."
+    />
+    <java
+      taskname="CheckVersion"
+      classname="com.bruceeckel.tools.CheckVersion"
+      classpath="${basedir}/.."
+      fork="true"
+      failonerror="true"
+    />
+    <property name="JDK.version.ok" value="true"/>
+  </target>
+
+  <!-- check the JDK version and for any jar dependencies -->
+  <target name="appendixa.check">
+    <condition property="junit.jar.missing">
+      <not>
+        <available file="${java.ext.dirs}/junit.jar"/>
+      </not>
+    </condition>
+    <antcall target="junit.jar.check"/>
+  </target>
+
+  <!-- insure that junit.jar exists. -->
+  <target name="junit.jar.check" if="junit.jar.missing">
+    <echo file="${basedir}/../errors.txt" append="true">appendixa requires junit.jar
+    Please place this jar in your extensions
+    directory: ${java.ext.dirs}
+    
+    </echo>
+    <echo message="junit.jar is missing.  See errors.txt"/>
+    <sleep seconds="5"/>
+  </target>
+
+  <!-- build all dependencies and check to see if tests are up to date -->
+  <target name="appendixa.prepare">
+    <condition property="test.run" value="true">
+      <or>
+        <uptodate>
+          <srcfiles dir= "${basedir}" includes="**/*Output.txt"/>
+          <mapper type="glob" from="*Output.txt" to="*.class"/>
+        </uptodate>
+        <available file="failed"/>
+      </or>
+    </condition>
+    <ant
+      antfile="${basedir}/../com/build.xml"
+      target="com.build"
+      dir="${basedir}/../com"
+      output="${basedir}/../com/log.txt"
+    />
+  </target>
+
+  <!-- set of files to compile (exclude files that lack necessary jars) -->
+  <patternset id="compile.sources">
+    <include name="**/*.java"/>
+    <exclude name="**/DeepCopy.java" if="junit.jar.missing"/>
+  </patternset>
+
+  <!-- build all classes in this directory -->
+  <target name="appendixa.build" depends="JDK.version.check,appendixa.prepare"
+    description="Compile all source files">
+    <javac
+      srcdir="${basedir}"
+      classpath="${basedir}/.."
+      source="1.4"
+    >
+      <patternset refid="compile.sources"/>
+    </javac>
+  </target>
+
+  <!-- force all tests to be run -->
+  <target name="test" description="Compile and test all examples">
+    <property name="test.run" value="true"/>
+    <antcall target="appendixa.run"/>
+  </target>
+
+  <!-- run all untested examples in this directory -->
+  <target name="appendixa.run" depends="appendixa.build" if="test.run"
+    description="Compile and run untested examples">
+    <touch file="failed"/>
+    <antcall target="AddingClone.run"/>
+    <antcall target="Alias1.run"/>
+    <antcall target="Alias2.run"/>
+    <antcall target="CheckCloneable.run"/>
+    <antcall target="Cloning.run"/>
+    <antcall target="Compete.run"/>
+    <antcall target="CopyConstructor.run"/>
+    <antcall target="DeepCopy.run"/>
+    <antcall target="HorrorFlick.run"/>
+    <antcall target="Immutable1.run"/>
+    <antcall target="Immutable2.run"/>
+    <antcall target="ImmutableInteger.run"/>
+    <antcall target="ImmutableStrings.run"/>
+    <antcall target="LocalCopy.run"/>
+    <antcall target="MutableInteger.run"/>
+    <antcall target="PassReferences.run"/>
+    <antcall target="Snake.run"/>
+    <antcall target="Stringer.run"/>
+    <delete file="failed"/>
+  </target>
+
+  <target name="AddingClone.run">
+    <java
+      taskname="AddingClone"
+      classname="AddingClone"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Alias1.run">
+    <java
+      taskname="Alias1"
+      classname="Alias1"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Alias2.run">
+    <java
+      taskname="Alias2"
+      classname="Alias2"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="CheckCloneable.run">
+    <java
+      taskname="CheckCloneable"
+      classname="CheckCloneable"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Cloning.run">
+    <java
+      taskname="Cloning"
+      classname="Cloning"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Compete.run">
+    <java
+      taskname="Compete"
+      classname="Compete"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="CopyConstructor.run">
+    <java
+      taskname="CopyConstructor"
+      classname="CopyConstructor"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="DeepCopy.run" unless="junit.jar.missing">
+    <java
+      taskname="DeepCopy"
+      classname="DeepCopy"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="HorrorFlick.run">
+    <java
+      taskname="HorrorFlick"
+      classname="appendixa.HorrorFlick"
+      classpath="${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Immutable1.run">
+    <java
+      taskname="Immutable1"
+      classname="Immutable1"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Immutable2.run">
+    <java
+      taskname="Immutable2"
+      classname="Immutable2"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="ImmutableInteger.run">
+    <java
+      taskname="ImmutableInteger"
+      classname="ImmutableInteger"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="ImmutableStrings.run">
+    <java
+      taskname="ImmutableStrings"
+      classname="ImmutableStrings"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="LocalCopy.run">
+    <java
+      taskname="LocalCopy"
+      classname="LocalCopy"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="MutableInteger.run">
+    <java
+      taskname="MutableInteger"
+      classname="MutableInteger"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="PassReferences.run">
+    <java
+      taskname="PassReferences"
+      classname="PassReferences"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Snake.run">
+    <java
+      taskname="Snake"
+      classname="Snake"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <target name="Stringer.run">
+    <java
+      taskname="Stringer"
+      classname="Stringer"
+      classpath="${basedir};${basedir}/.."
+      dir="../appendixa"
+      fork="true"
+      failonerror="true"
+    />
+  </target>
+
+  <!-- delete all class files -->
+  <target name="clean" description="Removes all old class files">
+    <delete>
+      <fileset dir="${basedir}" includes="**/*.class"/>
+      <fileset dir="${basedir}" includes="**/*Output.txt"/>
+      <fileset dir="${basedir}" includes="**/log.txt"/>
+      <fileset dir="${basedir}" includes="failed"/>
+    </delete>
+    <echo message="clean successful"/>
+  </target>
+
+  <target name="jcsc">
+    <taskdef name="jcsc" classname="rj.tools.jcsc.ant.JCSCTask"/>
+    <jcsc rules="${basedir}/../tij.jcsc"
+      startpackage="appendixa"
+      destdir="${basedir}/../jcsc"
+      worstcount="20">
+      <fileset dir="${basedir}" includes="**/*.java"/>
+    </jcsc>
+  </target>
+</project>

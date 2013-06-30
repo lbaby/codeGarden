@@ -1,0 +1,243 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+# Add inputs and outputs from these tool invocations to the build variables 
+CPP_SRCS += \
+../AVLTree.cpp \
+../Association.cpp \
+../BST.cpp \
+../BTree.cpp \
+../BinaryHeap.cpp \
+../BinaryTree.cpp \
+../BinomialQueue.cpp \
+../BinomialTree.cpp \
+../ChainedHashTable.cpp \
+../ChainedScatterTable.cpp \
+../Container.cpp \
+../Deque.cpp \
+../DequeAsArray.cpp \
+../DequeAsLinkedList.cpp \
+../GeneralTree.cpp \
+../Hash.cpp \
+../HashTable.cpp \
+../LeftistHeap.cpp \
+../ListAsArray.cpp \
+../ListAsLinkedList.cpp \
+../MWayTree.cpp \
+../NaryTree.cpp \
+../NullIterator.cpp \
+../NullObject.cpp \
+../Object.cpp \
+../OpenScatterTable.cpp \
+../Polynomial.cpp \
+../QueueAsArray.cpp \
+../QueueAsLinkedList.cpp \
+../RPNCalculator.cpp \
+../RandomNumberGenerator.cpp \
+../RandomVariable.cpp \
+../SetAsArray.cpp \
+../SortedListAsArray.cpp \
+../SortedListAsLinkedList.cpp \
+../StackAsArray.cpp \
+../StackAsLinkedList.cpp \
+../Term.cpp \
+../ToolKits.cpp \
+../Tree.cpp \
+../ta2d.cpp \
+../tarray.cpp \
+../tavl.cpp \
+../tbh.cpp \
+../tbq.cpp \
+../tbst.cpp \
+../tbt.cpp \
+../tbt2.cpp \
+../tbtree.cpp \
+../tcht.cpp \
+../tcst.cpp \
+../tcw.cpp \
+../tdic.cpp \
+../tdq.cpp \
+../tgt.cpp \
+../tlaa.cpp \
+../tlall.cpp \
+../tlh.cpp \
+../tll.cpp \
+../tmt.cpp \
+../tmwt.cpp \
+../tnt.cpp \
+../tost.cpp \
+../tpoly.cpp \
+../tpti.cpp \
+../tqaa.cpp \
+../tqall.cpp \
+../trpn.cpp \
+../tsall.cpp \
+../tsas.cpp \
+../tsimu.cpp \
+../tslaa.cpp \
+../tslall.cpp \
+../twrapper.cpp 
+
+OBJS += \
+./AVLTree.o \
+./Association.o \
+./BST.o \
+./BTree.o \
+./BinaryHeap.o \
+./BinaryTree.o \
+./BinomialQueue.o \
+./BinomialTree.o \
+./ChainedHashTable.o \
+./ChainedScatterTable.o \
+./Container.o \
+./Deque.o \
+./DequeAsArray.o \
+./DequeAsLinkedList.o \
+./GeneralTree.o \
+./Hash.o \
+./HashTable.o \
+./LeftistHeap.o \
+./ListAsArray.o \
+./ListAsLinkedList.o \
+./MWayTree.o \
+./NaryTree.o \
+./NullIterator.o \
+./NullObject.o \
+./Object.o \
+./OpenScatterTable.o \
+./Polynomial.o \
+./QueueAsArray.o \
+./QueueAsLinkedList.o \
+./RPNCalculator.o \
+./RandomNumberGenerator.o \
+./RandomVariable.o \
+./SetAsArray.o \
+./SortedListAsArray.o \
+./SortedListAsLinkedList.o \
+./StackAsArray.o \
+./StackAsLinkedList.o \
+./Term.o \
+./ToolKits.o \
+./Tree.o \
+./ta2d.o \
+./tarray.o \
+./tavl.o \
+./tbh.o \
+./tbq.o \
+./tbst.o \
+./tbt.o \
+./tbt2.o \
+./tbtree.o \
+./tcht.o \
+./tcst.o \
+./tcw.o \
+./tdic.o \
+./tdq.o \
+./tgt.o \
+./tlaa.o \
+./tlall.o \
+./tlh.o \
+./tll.o \
+./tmt.o \
+./tmwt.o \
+./tnt.o \
+./tost.o \
+./tpoly.o \
+./tpti.o \
+./tqaa.o \
+./tqall.o \
+./trpn.o \
+./tsall.o \
+./tsas.o \
+./tsimu.o \
+./tslaa.o \
+./tslall.o \
+./twrapper.o 
+
+CPP_DEPS += \
+./AVLTree.d \
+./Association.d \
+./BST.d \
+./BTree.d \
+./BinaryHeap.d \
+./BinaryTree.d \
+./BinomialQueue.d \
+./BinomialTree.d \
+./ChainedHashTable.d \
+./ChainedScatterTable.d \
+./Container.d \
+./Deque.d \
+./DequeAsArray.d \
+./DequeAsLinkedList.d \
+./GeneralTree.d \
+./Hash.d \
+./HashTable.d \
+./LeftistHeap.d \
+./ListAsArray.d \
+./ListAsLinkedList.d \
+./MWayTree.d \
+./NaryTree.d \
+./NullIterator.d \
+./NullObject.d \
+./Object.d \
+./OpenScatterTable.d \
+./Polynomial.d \
+./QueueAsArray.d \
+./QueueAsLinkedList.d \
+./RPNCalculator.d \
+./RandomNumberGenerator.d \
+./RandomVariable.d \
+./SetAsArray.d \
+./SortedListAsArray.d \
+./SortedListAsLinkedList.d \
+./StackAsArray.d \
+./StackAsLinkedList.d \
+./Term.d \
+./ToolKits.d \
+./Tree.d \
+./ta2d.d \
+./tarray.d \
+./tavl.d \
+./tbh.d \
+./tbq.d \
+./tbst.d \
+./tbt.d \
+./tbt2.d \
+./tbtree.d \
+./tcht.d \
+./tcst.d \
+./tcw.d \
+./tdic.d \
+./tdq.d \
+./tgt.d \
+./tlaa.d \
+./tlall.d \
+./tlh.d \
+./tll.d \
+./tmt.d \
+./tmwt.d \
+./tnt.d \
+./tost.d \
+./tpoly.d \
+./tpti.d \
+./tqaa.d \
+./tqall.d \
+./trpn.d \
+./tsall.d \
+./tsas.d \
+./tsimu.d \
+./tslaa.d \
+./tslall.d \
+./twrapper.d 
+
+
+# Each subdirectory must supply rules for building sources it contributes
+%.o: ../%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+

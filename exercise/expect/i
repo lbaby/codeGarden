@@ -1,0 +1,6 @@
+
+spawn sh
+interact {
+    "y2" {send "set def qwk/term=vt100 yhoriz=200"}
+        "~~d" {send [exec date]}
+        }
