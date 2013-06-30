@@ -1,1 +1,0 @@
-curl $1 | grep td | grep value | grep ed2k |  sed  's/^.*value[[:space:]]*=[[:space:]]"\(ed2k[^"]\{1,\}\)".*$/\1/'
