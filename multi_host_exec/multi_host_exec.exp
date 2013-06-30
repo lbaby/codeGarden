@@ -31,7 +31,7 @@ proc telnet_and_exec {  host   user password  wd file } {
     #remove double quote password(if have )
     eval regsub -all --  {("$)|(^")} $password  {} password
 
-    expect "Password:" {  send "$password\r" }
+    expect  "password:" {   send "$password\r"  }
     sleep 1
         send "cd  $wd \r"
 	set cmd [open $file]
@@ -51,7 +51,7 @@ proc ssh_and_exec {  host   user password  wd file } {
 
     sleep 3
     regsub -all --  {("$)|(^")} $password {} password
-    expect "Password:" {  send "$password\r" }
+    expect -re  "[pP]assword:" { puts "send "; send "$password\r" }
     sleep 3
         send "cd  $wd \r"
 	set cmd [open $file]

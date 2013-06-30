@@ -1,0 +1,22 @@
+Creating Rock
+Creating Rock
+Creating Rock
+Creating Rock
+Creating Rock
+Creating Rock
+Creating Rock
+Creating Rock
+Creating Rock
+Creating Rock
+Exception in thread "main" java.lang.NoClassDefFoundError: com/bruceeckel/simpletest/OutputVerifier
+	at com.bruceeckel.simpletest.Test.expect(Test.java:77)
+	at com.bruceeckel.simpletest.Test.expect(Test.java:82)
+	at SimpleConstructor.main(SimpleConstructor.java:16)
+Caused by: java.lang.ClassNotFoundException: com.bruceeckel.simpletest.OutputVerifier
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:202)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:190)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:301)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:247)
+	... 3 more

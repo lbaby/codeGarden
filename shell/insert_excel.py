@@ -15,7 +15,13 @@ import xlrd
 import datetime
 import cx_Oracle
 
-clas parse_insert:
+def excel_date():
+	pass
+
+
+
+class parse_sql:
+	'Parse the sql , inspect target table structure , do necessary format conversion'
 	def __init__(self, sql):
 		pass
 
@@ -25,24 +31,19 @@ clas parse_insert:
 	def get_fields():
 		return self.fields
 
-
-
-#Parse the sql , inspect target table structure , do necessary format conversion
 def sql_executor(cursor, sql):
 	#For closure imitation
-	#Encapsule a sql statement in a class
 	class bind_sql_to_executor:
 		def __init__(self, cursor, sql)
 			'''
-			execute a sql with lines
-			insert into client_node 
-			values((select nvl(max(client_id),1) from client_node),:n4,:n5,
-			to_number(:n6),:n7,to_number(:n9),:n8,:n10, NULL,:n3)
+			Bind a sql(insert only) to cursor 
 			'''
-			self.re_bind_var = re.compile(r':\w+\W*?')
+			self.re_bind_var = re.compile(r':[a-z][a-z]?')
 			self.re_word_strip=re.compile(r'\W+')
 			self.node_prefix='n' #For node count, n1 means node 1
 			self.sql = sql
+			self.cursor = cursor
+			self.a_z = 'abcdefghijklmnopqrstuvwxyz'
 			#cx_Oracle require exact number of key in dictionary
 			#So I must extract the bindind variable from sql 
 			#bind_var_list (':va1',':va2')
@@ -53,14 +54,17 @@ def sql_executor(cursor, sql):
 				var_key = self.re_word_strip.sub('',s)
 				if var_key not in self.var_key_list:
 					self.var_key_list.append(var_key)
-			self.tar
-			#parse
+
 		def exec_using(self, data)
 			#Fill a dict for variable bind data => {'n1':'v1', 'n2':'v2'...}
 			val_dict=dict()
 			for key in self.var_key_list:
 				val_dict[key] = field[int(key.replace(self.node_prefix,'')) -1]
-			cursor.execute(self.sql, val_dict)	
+			self.cursor.execute(self.sql, val_dict)	
+
+		def excel_row_number(self, row):
+			
+
 	#Return analysed sql executor 
 	return bind_sql_to_executor(cursor, sql).exec_using
 
