@@ -1,0 +1,28 @@
+CXXFLAGS = -c -I. -g +DD64 
+LDFLAGS =  +DD64
+C++=aCC
+
+BIN = blcdup
+
+all:$(BIN)
+.cpp.o:
+	$(C++) -o $@ $< $(CXXFLAGS) 
+
+
+#the folowing lines generated  by command "gcc -MM"
+#end of gcc -MM
+
+blcdup:blcdup.o toolkits.o log_file.o do_weed.o
+	$(C++) -o $@ blcdup.o toolkits.o log_file.o do_weed.o $(LDFLAGS)
+
+clean:
+	rm -f *.o $(BIN)
+blcdup.o: blcdup.cpp blcdup.h stl_conf.h toolkits.h htable.h log_file.h \
+  do_weed.h
+do_weed.o: do_weed.cpp do_weed.h blcdup.h stl_conf.h toolkits.h htable.h \
+  log_file.h
+log_file.o: log_file.cpp log_file.h stl_conf.h toolkits.h htable.h
+toolkits.o: toolkits.cpp toolkits.h htable.h stl_conf.h
+toolkits.o: toolkits.h htable.h stl_conf.h
+htable.o: htable.h stl_conf.h
+stl_conf.o: stl_conf.h
