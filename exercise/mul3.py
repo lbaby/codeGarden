@@ -30,7 +30,7 @@ def allNCombination(a,n):
                  yield map(value,r)
 
 def whichRange(a2d, n,  rule, op ):
-    return rule( map(op, [ r for r in allNCombination(a2d, n)] ))
+    return rule( map(op,  allNCombination(a2d, n) ))
 
 M=10
 nn=3
