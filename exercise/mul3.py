@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import random
 
 #     /
@@ -27,19 +28,22 @@ def allNCombination(a,n):
           for r in gr(x, y, n):
              if len(filter(validRange, r)) == n:
                  yield map(value,r)
+
+def whichRange(a2d, n,  rule, op ):
+    return rule( map(op, [ r for r in allNCombination(a2d, n)] ))
+
 M=10
 nn=3
 #for test
-c =  [ [ int(random.random() * 1031 * random.choice([-1,1])) for x in range(M)] for y in range(M) ] 
-for cc in c :
-    print cc
-c=[r for r in allNCombination(c, nn)]
+c =  [ [ int(random.random() * 1031 * random.choice([-1,1])) 
+    for x in range(M)] 
+    for y in range(M) ] 
 
-for cc in c :
-    print cc
 op = lambda s:[reduce (lambda x,y: x*y,  s, 1),s]
-c=map(op, c)
-cmp = lambda k: k[0]
-print max(c , key=cmp)
+mykey = lambda k: k[0]
+rule = lambda x:max(x , key=mykey)
+
+print whichRange(c, 3 , rule, op)
+
 
 
