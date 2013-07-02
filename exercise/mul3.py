@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 import random
-
+'''
+Find the max one of n consecutive multiply  result out of MxM matrix.
+consecutive means :landscape vertical or diagonally
+'''
 #     /
 #   + -- 
 #   | \
