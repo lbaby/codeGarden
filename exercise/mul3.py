@@ -1,9 +1,10 @@
 #! /usr/bin/env python
-import random
+#vi:ts=4 sw=4 ai expandtab noet nowrap ft=py fdm=syntqax:
 '''
 Find the max one of n consecutive multiply  result out of MxM matrix.
 consecutive means :landscape vertical or diagonally
 '''
+
 #     /
 #   + -- 
 #   | \
@@ -17,9 +18,9 @@ def gr(x, y,n):
         r.append((x, y+i,))
         rd.append((x+i, y+i,))
         d.append((x+i, y,))
-    yield ur  #up-right
+    yield ur  #up right
     yield r   #right 
-    yield rd  #right down
+    yield rd  #lower right
     yield d   #down
 
 def allNCombination(a,n):
@@ -38,6 +39,7 @@ def whichRange(a2d, n,  rule, op ):
 M=10
 nn=3
 #for test
+import random
 c =  [ [ int(random.random() * 1031 * random.choice([-1,1])) 
     for x in range(M)] 
     for y in range(M) ] 
@@ -47,6 +49,4 @@ mykey = lambda k: k[0]
 rule = lambda x:max(x , key=mykey)
 
 print whichRange(c, 3 , rule, op)
-
-
 
