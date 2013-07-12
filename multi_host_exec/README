@@ -1,1 +1,1 @@
-execute a local script on multiple  remote hosts, see h.conf for a configuration example
+execute a local script on multiple  remote hosts, see host.conf for a configuration example
