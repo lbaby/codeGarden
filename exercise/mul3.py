@@ -1,8 +1,8 @@
 #! /usr/bin/env python
-#vi:ts=4 sw=4 ai expandtab noet nowrap ft=py fdm=syntqax:
+#vim:ts=4 sw=4 ai expandtab noet nowrap ft=py fdm=syntqax:
 '''
 Find the max one of n consecutive multiply  result out of MxM matrix.
-consecutive means :landscape vertical or diagonally
+consecutive means :landscape vertical or diagonal
 '''
 
 #     /
@@ -29,24 +29,29 @@ def allNCombination(a,n):
     value = lambda p: a[p[0]][p[1]]
     for y in range(len(a)):
        for x in range(len(a[y])): 
-          for r in gr(x, y, n):
-             if len(filter(validRange, r)) == n:
-                 yield map(value,r)
+          for r in gr(x, y, n): #Let's start from this point
+             if len(filter(validRange, r)) == n:#Get a valid n point
+                 yield map(value,r)  #return the value
 
 def whichRange(a2d, n,  rule, op ):
     return rule( map(op,  allNCombination(a2d, n) ))
 
 M=10
 nn=3
-#for test
+#For test random 2d array
 import random
 c =  [ [ int(random.random() * 1031 * random.choice([-1,1])) 
     for x in range(M)] 
     for y in range(M) ] 
 
+#pretty print
+for line in c:
+    for row in line:
+       print row,'\t',
+    print
+    
 op = lambda s:[reduce (lambda x,y: x*y,  s, 1),s]
-mykey = lambda k: k[0]
-rule = lambda x:max(x , key=mykey)
+rule = lambda x:max(x , key= lambda k:k[0])
 
 print whichRange(c, 3 , rule, op)
 
