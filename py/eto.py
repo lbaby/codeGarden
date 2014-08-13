@@ -34,9 +34,8 @@ def sql_executor(cursor, sql):
             self.insert_value_list_re = re.compile(r'^\s*\(\s*((([\w.]+|:\w+)\s*,\s*)*)([\w.]+|:\w+)\s*\)\s*$')
             self.parenthesis_re = re.compile(r'\((\s*[^\)]+)\)')
             self.table_and_values = self.get_table_values(self.psql[0].tokens)
-            #print(str(self.table_values[0]))
             if len(self.table_and_values) != 2:
-                raise RuntimeError("{0:s} \n is not a expected insert statement".format(sql))
+                raise RuntimeError("{0:s} \n is not an expected insert statement".format(sql))
             self.insert_data_type = list()  # [None, datetime.datetime, None, None ...]
             self.get_var_type()
             self.bind_vars = dict()  # { key : [excel_column, insert_data_type] }
@@ -51,12 +50,10 @@ def sql_executor(cursor, sql):
                 query_sql = query % ('*', sql_fields[0])
             else:
                 query_sql = query % (sql_fields[2] + sql_fields[4], sql_fields[0])
-                #print(query_sql)
             self.cursor.execute(query_sql)
             self.insert_data_type = [datetime.datetime
                                      if isinstance(t, cx_Oracle.DATETIME) else None
                                      for t in self.cursor.fetchvars]
-            print(self.insert_data_type)
 
         def get_bind_vars(self):
             """
@@ -64,7 +61,6 @@ def sql_executor(cursor, sql):
 
             """
             values = self.parenthesis_re.match(str(self.table_and_values[1])).groups()[0]
-            #print(values)
             value_list = values.split(',')
             A_Z = 'abcdefghijklmnopqrstuvwxyz'.upper()
             i = 0
@@ -72,7 +68,6 @@ def sql_executor(cursor, sql):
             for k in value_list:
                 var_name_match = re.match('^\s*:\s*(\w+)\s*$', k)
                 if var_name_match is not None:  # bind variable
-                    #print ('bind var :', var_name_match.groups()[0])
                     j = var_name_match.groups()[0]
                     # A -> 0, Z->25 , Az -> 51
                     # value pair : [excel column, parameter position ]
@@ -120,10 +115,12 @@ def sql_executor(cursor, sql):
             key_values = dict()
             for k, v in self.bind_vars.items():
                 data_type, excel_column = v[0], v[1]
-                #print('type, column:',data_type, excel_column)
                 if self.insert_data_type[data_type] is not None:  # Excel Date format translate
-                    #print(type(row[excel_column]))
-                    key_values[k] = xlrd.xldate.xldate_as_datetime(row[excel_column], 1)
+                    try:
+                        key_values[k] = xlrd.xldate.xldate_as_datetime(row[excel_column], 1)
+                    except Exception as e:
+                        raise RuntimeError('Can not convert ' + str(row[excel_column]) + ' into date: '
+                                           + str(e) + ' you must format  this cell into date')
                 else:  # or not any translation
                     key_values[k] = row[excel_column]
             self.cursor.execute(self.sql, key_values)
@@ -165,6 +162,6 @@ if __name__ == '__main__':
         try:
             exec_using(each_row)
         except Exception as e:
-            print(each_row , e, sys.stderr)
+            print(e, ':', each_row, file=sys.stderr)
     cursor.close()
     db.commit()
