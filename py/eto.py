@@ -165,3 +165,4 @@ if __name__ == '__main__':
             print(e, ':', each_row, file=sys.stderr)
     cursor.close()
     db.commit()
+    db.close()
