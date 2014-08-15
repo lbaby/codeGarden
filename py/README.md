@@ -1,12 +1,19 @@
 
 eto.py  
 ============
-##insert an excel file into oracle database
-## Usage:
-###   eto.py excel=myexcel.xls db=user/passwd@db sql="insert into  table1 values (:a, :b , :c)"
-### or 
-###   eto.py excel=myexcel.xls db=user/passwd@db sql="insert into  table1(col1, col2, col3) values (:a, seq.nextval , 3)"
-### 
+###insert an excel file into oracle database
+
+### Usage:
+####  python3 eto.py excel=myexcel.xls db=user/passwd@db sql="insert into  table1 values (:a, :b , :c)"
+#### or 
+####  python3 eto.py excel=myexcel.xls db=user/passwd@db sql="insert into  table1(col1, col2, col3) values (:a, seq.nextval , 3)"
+#### python 2.x is also support with lame error message
+
+
+### How to install dependent package 
+* pip install cx_Oracle
+* pip install sqlparse
+* pip install xlrd
 
 #Notice
 * The :a , :b  is reference of excel column with prefix ':'
