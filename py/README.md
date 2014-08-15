@@ -8,7 +8,7 @@ eto.py
 #### Or 
 	python3 eto.py excel=myexcel.xls db=user/passwd@db sql="insert into  table1(col1, col2, col3) values (:a, seq.nextval , 3)"
 
-python 2.x is also support with lame error message
+Python 2.x is also support with lame error message
 
 
 ### How to install dependent package 
