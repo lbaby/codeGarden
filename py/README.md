@@ -12,9 +12,9 @@ python 2.x is also support with lame error message
 
 
 ### How to install dependent package 
-* pip install cx_Oracle
-* pip install sqlparse
-* pip install xlrd
+*	pip install cx_Oracle
+*	pip install sqlparse
+*	pip install xlrd
 
 #Info
 * The :a , :b  is reference of excel column with prefix ':'
