@@ -41,7 +41,7 @@ def bing_dict(browser, words_list):
                 field = None
                 pass
             browser_data.append(field)
-        yield [each_word, *browser_data]
+        yield [each_word] +browser_data
 
 
 def input_words_list(input_file):
@@ -111,7 +111,7 @@ def format_anki(words_list, browser, voice_files, media_dir):
         pdstrs=[]
         for pd in zip(pos,defi):
             pdstrs += pd
-        yield (word, pron,voice, *pdstrs, anki_img)
+        yield [word, pron,voice] +pdstrs +[anki_img]
 
 
 def create_anki_file(input_words, voice_path, browser, media_dir):
