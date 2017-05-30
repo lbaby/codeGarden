@@ -94,7 +94,7 @@ def format_anki(words_list, browser, voice_files, media_dir):
         for i in range(def_limit):
             pos.append( '' if i >= len(each_word[2]) else text_extractor(each_word[2][i]))
             defi.append( '' if i >= len(each_word[3]) else text_extractor(each_word[3][i]))
-        print(word,pos, defi)
+        #print(word,pos, defi)
         #retrieve image via http(if have)
         imgs=each_word[4]
         anki_img=''
