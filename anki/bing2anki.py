@@ -85,7 +85,7 @@ def format_anki(words_list, browser, voice_files, media_dir):
         pron = text_extractor(each_word[1])
         try :
             voice_file = voice_files[word]
-            voice = '[sound:{0}]'.format(voice_file)
+            voice = '[sound:{0}]'.format(os.path.basename(voice_file))
             shutil.copy(voice_file, media_dir)
         except  KeyError as k:
             voice = ''
