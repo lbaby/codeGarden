@@ -48,6 +48,8 @@ def input_words_list(input_file):
     re_en_word=re.compile(r'^[a-zA-Z]+$')
     re_space = re.compile(r'\s+')
     for each_line in input_file: 
+        if re_empty_line.match(each_line.rstrip()):
+            continue
         words=re_space.split(each_line)
         if len(words) <1:continue
         en_words= []
@@ -115,14 +117,23 @@ def format_anki(words_list, browser, voice_files, media_dir):
 
 
 def create_anki_file(input_words, voice_path, browser, media_dir):
+    anki_file = 'anki_bing.txt'
     voice_files=list_all(voice_path)
     re_suffix = re.compile(r'\.[^.]+$')
     if not voice_path.startswith(os.path.abspath(voice_path)):
         voice_files_nosuff={re_suffix.sub('',k):os.path.abspath(v) for k,v in voice_files.items()}
     else:
         voice_files_nosuff={re_suffix.sub('',k):v for k,v in voice_files.items()}
-    with codecs.open('anki_bing.txt', 'w', 'utf-8') as anki_file:
-        for anki_line in format_anki(input_words, browser, voice_files_nosuff, media_dir):
+    #to check if anki_bing.txt exists , if so , continue with the end of file
+    to_do_words  = list()
+    done_list = list()
+    if os.access(anki_file, os.R_OK):
+        print('Previous {0} found, will continue with it, if you want start over, break and delete it then restart the progress'.format( anki_file), file=sys.stderr) 
+    with codecs.open('anki_bing.txt', 'a+', 'utf-8') as anki_file:
+        anki_file.seek(0)
+        done_list  = [line.split(col_sep)[0] for line in anki_file]
+        to_do_words = [word for word in input_words if word not in done_list]
+        for anki_line in format_anki(to_do_words, browser, voice_files_nosuff, media_dir):
             anki_file.write(col_sep.join(anki_line) )
             anki_file.write('\n')
 
