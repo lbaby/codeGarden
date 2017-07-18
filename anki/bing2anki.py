@@ -128,8 +128,8 @@ def create_anki_file(input_words, voice_path, browser, media_dir):
     to_do_words  = list()
     done_list = list()
     if os.access(anki_file, os.R_OK):
-        print('Previous {0} found, will continue with it, if you want start over, break and delete it then restart the progress'.format( anki_file), file=sys.stderr) 
-    with codecs.open('anki_bing.txt', 'a+', 'utf-8') as anki_file:
+        print('Previous output {0} found, will continue with it, if you want to start over, break this operation and delete the {0}, then restart the progress once more.'.format( anki_file), file=sys.stderr) 
+    with codecs.open(anki_file, 'a+', 'utf-8') as anki_file:
         anki_file.seek(0)
         done_list  = [line.split(col_sep)[0] for line in anki_file]
         to_do_words = [word for word in input_words if word not in done_list]
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     if not os.access(media_dir, os.R_OK):
         os.mkdir(media_dir)
     elif not os.path.isdir(media_dir):
-        print('{0} is not a directory, please choose a directory to save image'.format(media_dir), file=sys.stderr)
+        print('{0} should be a directory, but it\'s a file now, please rename or remove it, to protect your data, exiting now'.format(media_dir), file=sys.stderr)
         os.exit(1)
     else:
         pass
